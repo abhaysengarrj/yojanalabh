@@ -5,6 +5,7 @@ import '../../state/app_state.dart' as app_state;
 import '../../data/repository/scheme_repository.dart';
 import '../../engine/eligibility_engine.dart';
 import '../../models/scheme.dart';
+import '../../translations/app_localizations.dart';
 import '../widgets/scheme_card.dart';
 import 'detail_screen.dart';
 
@@ -31,25 +32,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final allSchemes = await repo.getAllSchemes();
     final favs = allSchemes.where((s) => appState.isFavorite(s.id ?? -1)).toList();
     if (!mounted) return;
-    setState(() {
-      _favoriteSchemes = favs;
-      _loadingFavs = false;
-    });
+    setState(() { _favoriteSchemes = favs; _loadingFavs = false; });
   }
 
   Future<void> _clearAllData() async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('डेटा साफ़ करें'),
-        content: const Text('सभी सेव की गई जानकारी और पसंदीदा हटा दें?'),
+        title: Text(context.tr('clearData')),
+        content: Text(context.tr('clearConfirm')),
         actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('नहीं')),
-          TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('हां')),
+          TextButton(onPressed: () => Navigator.pop(ctx, false),
+              child: Text(context.tr('no'))),
+          TextButton(onPressed: () => Navigator.pop(ctx, true),
+              child: Text(context.tr('yes'))),
         ],
       ),
     );
@@ -60,15 +56,57 @@ class _SettingsScreenState extends State<SettingsScreen> {
       if (!mounted) return;
       setState(() => _favoriteSchemes = []);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('डेटा साफ़ कर दिया गया')),
+        SnackBar(content: Text(context.tr('dataCleared'))),
       );
     }
+  }
+
+  void _showLanguagePicker() {
+    final appState = context.read<app_state.AppState>();
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        final currentCode = appState.languageCode;
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(context.tr('language'),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
+              ...app_state.AppState.supportedLocales.map((locale) {
+                final code = locale.languageCode;
+                final name = app_state.AppState.localeNames[code] ?? code;
+                final isSelected = currentCode == code;
+                return ListTile(
+                  leading: Icon(isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+                      color: isSelected ? Theme.of(context).colorScheme.primary : null),
+                  title: Text(name),
+                  trailing: isSelected
+                      ? Icon(Icons.check, color: Theme.of(context).colorScheme.primary)
+                      : null,
+                  onTap: () {
+                    appState.setLocale(locale);
+                    Navigator.pop(ctx);
+                  },
+                );
+              }),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final appState = context.watch<app_state.AppState>();
     final colorScheme = Theme.of(context).colorScheme;
+    final tr = context.tr;
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -79,12 +117,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               padding: const EdgeInsets.fromLTRB(20, 48, 20, 28),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    colorScheme.primary,
-                    colorScheme.secondary,
-                  ],
+                  begin: Alignment.topLeft, end: Alignment.bottomRight,
+                  colors: [colorScheme.primary, colorScheme.secondary],
                 ),
               ),
               child: Column(
@@ -92,20 +126,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
-                      shape: BoxShape.circle,
+                      color: Colors.white.withValues(alpha: 0.2), shape: BoxShape.circle,
                     ),
                     child: const Icon(Icons.settings, size: 32, color: Colors.white),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'सेटिंग्स',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+                  Text(tr('settings'),
+                      style: const TextStyle(fontSize: 22,
+                          fontWeight: FontWeight.bold, color: Colors.white)),
                 ],
               ),
             ),
@@ -118,13 +146,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         SwitchListTile(
                           secondary: Icon(Icons.dark_mode,
-                              color: appState.isDark
-                                  ? Colors.amber
-                                  : Colors.grey.shade600),
-                          title: const Text('डार्क मोड'),
-                          subtitle: const Text('रात में आंखों की सुरक्षा'),
+                              color: appState.isDark ? Colors.amber : Colors.grey.shade600),
+                          title: Text(tr('darkMode')),
+                          subtitle: Text(tr('darkModeSub')),
                           value: appState.isDark,
                           onChanged: (_) => appState.toggleDarkMode(),
+                        ),
+                        const Divider(height: 1),
+                        ListTile(
+                          leading: const Icon(Icons.language),
+                          title: Text(tr('language')),
+                          subtitle: Text(
+                            app_state.AppState.localeNames[appState.languageCode] ??
+                                appState.languageCode,
+                          ),
+                          trailing: const Icon(Icons.arrow_forward_ios, size: 14),
+                          onTap: _showLanguagePicker,
                         ),
                       ],
                     ),
@@ -140,9 +177,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             children: [
                               Icon(Icons.favorite, size: 20, color: Colors.red),
                               const SizedBox(width: 8),
-                              const Text('पसंदीदा योजनाएं',
-                                  style: TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.w600)),
+                              Text(tr('favorites'),
+                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                             ],
                           ),
                         ),
@@ -157,10 +193,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             child: Center(
                               child: Column(
                                 children: [
-                                  Icon(Icons.favorite_border,
-                                      size: 36, color: Colors.grey.shade400),
+                                  Icon(Icons.favorite_border, size: 36, color: Colors.grey.shade400),
                                   const SizedBox(height: 8),
-                                  Text('कोई पसंदीदा नहीं',
+                                  Text(tr('noFavorites'),
                                       style: TextStyle(color: Colors.grey.shade500)),
                                 ],
                               ),
@@ -176,18 +211,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               final scheme = _favoriteSchemes[index];
                               return SchemeCard(
                                 scheme: scheme,
-                                onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => DetailScreen(
-                                      result: EligibilityResult(
-                                        scheme: scheme,
-                                        matchPercentage: 0,
-                                        matchedRules: [],
-                                        missedRules: [],
-                                      ),
+                                onTap: () => Navigator.push(context,
+                                  MaterialPageRoute(builder: (_) => DetailScreen(
+                                    result: EligibilityResult(
+                                      scheme: scheme, matchPercentage: 0,
+                                      matchedRules: [], missedRules: [],
                                     ),
-                                  ),
+                                  )),
                                 ),
                               );
                             },
@@ -201,41 +231,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         ListTile(
                           leading: const Icon(Icons.delete_outline),
-                          title: const Text('डेटा साफ़ करें'),
-                          subtitle: const Text('सारी जानकारी रीसेट करें'),
+                          title: Text(tr('clearData')),
+                          subtitle: Text(tr('clearDataSub')),
                           onTap: _clearAllData,
                         ),
                         const Divider(height: 1),
                         ListTile(
                           leading: const Icon(Icons.share),
-                          title: const Text('ऐप शेयर करें'),
-                          subtitle: const Text('अपने दोस्तों को बताएं'),
+                          title: Text(tr('shareApp')),
+                          subtitle: Text(tr('shareAppSub')),
                           onTap: () {
-                            Share.share(
-                              'योजनालाभ ऐप डाउनलोड करें और जानें कौन सी सरकारी योजना आपके लिए है!\n\nhttps://github.com/abhaysengarrj/yojanalabh',
-                            );
+                            Share.share('${tr('shareAppText')}https://github.com/abhaysengarrj/yojanalabh');
                           },
                         ),
                         const Divider(height: 1),
                         ListTile(
                           leading: const Icon(Icons.info_outline),
-                          title: const Text('ऐप के बारे में'),
-                          subtitle: const Text('संस्करण 1.0.0'),
+                          title: Text(tr('about')),
+                          subtitle: Text('${tr('version')} 1.0.0'),
                           onTap: () => _showAbout(context),
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 24),
-                  Text(
-                    'योजनालाभ v1.0.0',
-                    style: TextStyle(color: Colors.grey.shade500, fontSize: 13),
-                  ),
-                  Text(
-                    'एक स्वतंत्र टूल • किसी सरकारी विभाग से संबद्ध नहीं',
-                    style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
-                    textAlign: TextAlign.center,
-                  ),
+                  Text('${tr('appName')} v1.0.0',
+                      style: TextStyle(color: Colors.grey.shade500, fontSize: 13)),
+                  Text(tr('independentTool'),
+                      style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
+                      textAlign: TextAlign.center),
                   const SizedBox(height: 32),
                 ],
               ),
@@ -249,12 +273,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _showAbout(BuildContext context) {
     showAboutDialog(
       context: context,
-      applicationName: 'योजनालाभ',
+      applicationName: context.tr('appName'),
       applicationVersion: '1.0.0',
-      applicationLegalese: 'एक स्वतंत्र टूल • किसी सरकारी विभाग से संबद्ध नहीं',
-      children: [
-        const Text('सरकारी योजनाओं की पात्रता जांचने के लिए मुफ्त हिंदी ऐप।'),
-      ],
+      applicationLegalese: context.tr('independentTool'),
+      children: [Text(context.tr('aboutDesc'))],
     );
   }
 }

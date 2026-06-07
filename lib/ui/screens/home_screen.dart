@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../data/repository/scheme_repository.dart';
 import '../../data/update/scheme_updater.dart';
+import '../../translations/app_localizations.dart';
 import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,13 +15,14 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   bool _loading = true;
-  String _statusMessage = 'डेटा लोड हो रहा है...';
+  String _statusMessage = '';
   late AnimationController _animController;
   late Animation<double> _fadeAnim;
 
   @override
   void initState() {
     super.initState();
+    _statusMessage = context.tr('loading');
     _animController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -44,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen>
       await repo.loadSeedData();
       final updater = SchemeUpdater();
       if (await updater.shouldCheckForUpdates()) {
-        setState(() => _statusMessage = 'नई योजनाओं की जांच हो रही है...');
+        setState(() => _statusMessage = context.tr('checkingUpdates'));
         final payload = await updater.checkForUpdates();
         if (payload != null && payload.schemes.isNotEmpty) {
           await repo.replaceAllSchemes(payload.schemes);
@@ -97,9 +99,9 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 ),
                 const SizedBox(height: 32),
-                const Text(
-                  'योजनालाभ',
-                  style: TextStyle(
+                Text(
+                  context.tr('appName'),
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -107,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'सरकारी योजना पात्रता जांच',
+                  context.tr('appTagline'),
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.white.withValues(alpha: 0.8),

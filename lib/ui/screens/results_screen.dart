@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../engine/eligibility_engine.dart';
+import '../../translations/app_localizations.dart';
 import '../widgets/scheme_card.dart';
 import 'detail_screen.dart';
 
@@ -12,10 +13,11 @@ class ResultsScreen extends StatelessWidget {
     final eligible = results.where((r) => r.matchPercentage >= 50).toList();
     final partial =
         results.where((r) => r.matchPercentage > 0 && r.matchPercentage < 50).toList();
+    final tr = context.tr;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${eligible.length} योजनाएं मिलीं'),
+        title: Text('${eligible.length} ${tr('schemesFound')}'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(4),
           child: LinearProgressIndicator(
@@ -31,10 +33,9 @@ class ResultsScreen extends StatelessWidget {
                 children: [
                   Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
                   const SizedBox(height: 16),
-                  const Text('कोई योजना नहीं मिली',
-                      style: TextStyle(fontSize: 18)),
+                  Text(tr('noSchemes'), style: const TextStyle(fontSize: 18)),
                   const SizedBox(height: 8),
-                  Text('कृपया अपनी जानकारी दोबारा जांचें',
+                  Text(tr('noSchemesHint'),
                       style: TextStyle(color: Colors.grey.shade600)),
                 ],
               ),
@@ -46,11 +47,9 @@ class ResultsScreen extends StatelessWidget {
                 EligibilityResult r;
                 bool isEligible;
                 if (index < eligible.length) {
-                  r = eligible[index];
-                  isEligible = true;
+                  r = eligible[index]; isEligible = true;
                 } else {
-                  r = partial[index - eligible.length];
-                  isEligible = false;
+                  r = partial[index - eligible.length]; isEligible = false;
                 }
                 final showHeader = index == 0 && eligible.isNotEmpty ||
                     (index == eligible.length && partial.isNotEmpty);
@@ -58,23 +57,17 @@ class ResultsScreen extends StatelessWidget {
                   children: [
                     if (showHeader)
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 8, horizontal: 4),
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
                         child: Row(
                           children: [
-                            Icon(
-                              isEligible
-                                  ? Icons.check_circle
-                                  : Icons.info_outline,
-                              size: 18,
-                              color: isEligible ? Colors.green : Colors.orange,
-                            ),
+                            Icon(isEligible ? Icons.check_circle : Icons.info_outline,
+                                size: 18,
+                                color: isEligible ? Colors.green : Colors.orange),
                             const SizedBox(width: 6),
                             Text(
-                              isEligible ? 'आपके लिए उपयुक्त' : 'आंशिक रूप से उपयुक्त',
+                              isEligible ? tr('eligibleForYou') : tr('partiallyEligible'),
                               style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w600,
+                                fontSize: 15, fontWeight: FontWeight.w600,
                                 color: isEligible ? Colors.green : Colors.orange,
                               ),
                             ),
@@ -82,13 +75,9 @@ class ResultsScreen extends StatelessWidget {
                         ),
                       ),
                     SchemeCard(
-                      scheme: r.scheme,
-                      matchPercentage: r.matchPercentage,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => DetailScreen(result: r)),
-                      ),
+                      scheme: r.scheme, matchPercentage: r.matchPercentage,
+                      onTap: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => DetailScreen(result: r))),
                     ),
                   ],
                 );

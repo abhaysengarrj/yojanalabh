@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'state/app_state.dart' as app_state;
+import 'translations/app_localizations.dart';
 import 'ui/screens/home_screen.dart';
 import 'ui/screens/browse_screen.dart';
 import 'ui/screens/settings_screen.dart';
@@ -15,6 +16,20 @@ class YojanaLabhApp extends StatelessWidget {
       title: 'योजनालाभ',
       debugShowCheckedModeBanner: false,
       themeMode: appState.themeMode,
+      locale: appState.locale,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+      ],
+      supportedLocales: app_state.AppState.supportedLocales,
+      localeResolutionCallback: (locale, supported) {
+        if (locale == null) return const Locale('hi');
+        for (final supportedLocale in supported) {
+          if (supportedLocale.languageCode == locale.languageCode) {
+            return supportedLocale;
+          }
+        }
+        return const Locale('hi');
+      },
       theme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.light,
@@ -80,39 +95,37 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
 
-  final _screens = [
-    const HomeScreen(),
-    const BrowseScreen(),
-    const SettingsScreen(),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 250),
-        child: _screens[_currentIndex],
+      body: IndexedStack(
+        index: _currentIndex,
+        children: const [
+          HomeScreen(),
+          BrowseScreen(),
+          SettingsScreen(),
+        ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (i) => setState(() => _currentIndex = i),
         indicatorColor: colorScheme.secondaryContainer,
-        destinations: const [
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.search),
-            selectedIcon: Icon(Icons.search),
-            label: 'जांचें',
+            icon: const Icon(Icons.search),
+            selectedIcon: const Icon(Icons.search),
+            label: context.tr('navCheck'),
           ),
           NavigationDestination(
-            icon: Icon(Icons.grid_view_outlined),
-            selectedIcon: Icon(Icons.grid_view),
-            label: 'योजनाएं',
+            icon: const Icon(Icons.grid_view_outlined),
+            selectedIcon: const Icon(Icons.grid_view),
+            label: context.tr('navBrowse'),
           ),
           NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings),
-            label: 'सेटिंग्स',
+            icon: const Icon(Icons.settings_outlined),
+            selectedIcon: const Icon(Icons.settings),
+            label: context.tr('navSettings'),
           ),
         ],
       ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../data/repository/scheme_repository.dart';
 import '../../engine/eligibility_engine.dart';
+import '../../translations/app_localizations.dart';
 import 'results_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -47,6 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final tr = context.tr;
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -76,9 +78,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: const Icon(Icons.person_outline, size: 36, color: Colors.white),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'अपनी जानकारी दर्ज करें',
-                    style: TextStyle(
+                  Text(
+                    tr('enterDetails'),
+                    style: const TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -86,7 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '30 सेकंड में जानें पात्र योजनाएं',
+                    tr('subtitle'),
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.white.withValues(alpha: 0.85),
@@ -101,46 +103,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _buildSectionCard(
-                    context,
-                    Icons.person,
-                    'व्यक्तिगत जानकारी',
-                    [
-                      _buildAgeSlider(context),
-                      const SizedBox(height: 8),
-                      _buildDropdown(context, 'व्यवसाय', _occupation, _occupations,
+                    Icons.person, tr('personalInfo'),
+                    [_buildAgeSlider(context), const SizedBox(height: 8),
+                      _buildDropdown(tr('occupation'), _occupation, _occupations,
                           (v) => setState(() => _occupation = v), Icons.work),
-                      _buildDropdown(context, 'जाति', _caste, _castes,
+                      _buildDropdown(tr('caste'), _caste, _castes,
                           (v) => setState(() => _caste = v), Icons.group),
-                      _buildDropdown(context, 'लिंग', _gender, _genders,
+                      _buildDropdown(tr('gender'), _gender, _genders,
                           (v) => setState(() => _gender = v), Icons.wc),
-                      _buildDropdown(context, 'राज्य', _state, _states,
+                      _buildDropdown(tr('state'), _state, _states,
                           (v) => setState(() => _state = v), Icons.location_city),
                     ],
                   ),
                   const SizedBox(height: 12),
                   _buildSectionCard(
-                    context,
-                    Icons.account_balance,
-                    'आर्थिक जानकारी',
-                    [
-                      _buildIncomeSlider(context),
-                      _buildLandSlider(context),
-                    ],
+                    Icons.account_balance, tr('financialInfo'),
+                    [_buildIncomeSlider(context), _buildLandSlider(context)],
                   ),
                   const SizedBox(height: 12),
                   _buildSectionCard(
-                    context,
-                    Icons.checklist,
-                    'अन्य जानकारी',
-                    [
-                      _buildSwitch(context, 'बीपीएल कार्ड धारक', _isBPL,
-                          (v) => setState(() => _isBPL = v), Icons.assignment),
-                      _buildSwitch(context, 'विवाहित', _isMarried,
-                          (v) => setState(() => _isMarried = v), Icons.favorite),
-                      _buildSwitch(context, 'बालिका है', _hasGirlChild,
-                          (v) => setState(() => _hasGirlChild = v), Icons.child_care),
-                      _buildSwitch(context, 'दिव्यांग', _hasDisability,
-                          (v) => setState(() => _hasDisability = v), Icons.accessible),
+                    Icons.checklist, tr('otherInfo'),
+                    [_buildSwitch(tr('bpl'), _isBPL, (v) => setState(() => _isBPL = v), Icons.assignment),
+                      _buildSwitch(tr('married'), _isMarried, (v) => setState(() => _isMarried = v), Icons.favorite),
+                      _buildSwitch(tr('hasGirlChild'), _hasGirlChild, (v) => setState(() => _hasGirlChild = v), Icons.child_care),
+                      _buildSwitch(tr('hasDisability'), _hasDisability, (v) => setState(() => _hasDisability = v), Icons.accessible),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -156,29 +142,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ? const SizedBox(
                               height: 24, width: 24,
                               child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
-                                color: Colors.white,
+                                strokeWidth: 2.5, color: Colors.white,
                               ),
                             )
                           : Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(Icons.search),
-                                const SizedBox(width: 8),
-                                const Text('योजनाएं जांचें'),
-                                const SizedBox(width: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.2),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    '${_occupations.length + _castes.length + _genders.length + _states.length ~/ 2}',
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                ),
+                                const Icon(Icons.search), const SizedBox(width: 8),
+                                Text(tr('checkSchemes')),
                               ],
                             ),
                     ),
@@ -193,8 +164,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildSectionCard(
-      BuildContext context, IconData icon, String title, List<Widget> children) {
+  Widget _buildSectionCard(IconData icon, String title, List<Widget> children) {
     return Card(
       margin: EdgeInsets.zero,
       child: Padding(
@@ -206,13 +176,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
                 const SizedBox(width: 8),
-                Text(title,
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w600)),
+                Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
               ],
             ),
-            const SizedBox(height: 12),
-            ...children,
+            const SizedBox(height: 12), ...children,
           ],
         ),
       ),
@@ -226,10 +193,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('आयु', style: TextStyle(fontSize: 15)),
-            Text('$_age वर्ष',
-                style: TextStyle(
-                    fontWeight: FontWeight.w600,
+            Text(context.tr('age'), style: const TextStyle(fontSize: 15)),
+            Text('$_age ${context.tr('years')}',
+                style: TextStyle(fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.primary)),
           ],
         ),
@@ -237,12 +203,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           data: SliderTheme.of(context).copyWith(
             activeTrackColor: Theme.of(context).colorScheme.primary,
             thumbColor: Theme.of(context).colorScheme.primary,
-            overlayColor:
-                Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+            overlayColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
           ),
           child: Slider(
-            value: _age.toDouble(),
-            min: 1, max: 100, divisions: 99,
+            value: _age.toDouble(), min: 1, max: 100, divisions: 99,
             label: '$_age',
             onChanged: (v) => setState(() => _age = v.round()),
           ),
@@ -261,23 +225,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('वार्षिक आय', style: TextStyle(fontSize: 15)),
-            Text(val,
-                style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.primary)),
+            Text(context.tr('annualIncome'), style: const TextStyle(fontSize: 15)),
+            Text(val, style: TextStyle(fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.primary)),
           ],
         ),
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
             activeTrackColor: Theme.of(context).colorScheme.primary,
             thumbColor: Theme.of(context).colorScheme.primary,
-            overlayColor:
-                Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+            overlayColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
           ),
           child: Slider(
-            value: _income,
-            min: 0, max: 2500000, divisions: 250,
+            value: _income, min: 0, max: 2500000, divisions: 250,
             label: '₹${_income.toInt()}',
             onChanged: (v) => setState(() => _income = v),
           ),
@@ -293,10 +253,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('कृषि भूमि', style: TextStyle(fontSize: 15)),
-            Text('$_land एकड़',
-                style: TextStyle(
-                    fontWeight: FontWeight.w600,
+            Text(context.tr('land'), style: const TextStyle(fontSize: 15)),
+            Text('$_land ${context.tr('acres')}',
+                style: TextStyle(fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.primary)),
           ],
         ),
@@ -304,13 +263,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           data: SliderTheme.of(context).copyWith(
             activeTrackColor: Theme.of(context).colorScheme.primary,
             thumbColor: Theme.of(context).colorScheme.primary,
-            overlayColor:
-                Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+            overlayColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
           ),
           child: Slider(
-            value: _land,
-            min: 0, max: 20, divisions: 40,
-            label: '$_land एकड़',
+            value: _land, min: 0, max: 20, divisions: 40,
+            label: '$_land ${context.tr('acres')}',
             onChanged: (v) => setState(() => _land = v),
           ),
         ),
@@ -318,8 +275,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildDropdown(BuildContext context, String label, String value,
-      List<String> items, ValueChanged<String> onChanged, IconData icon) {
+  Widget _buildDropdown(String label, String value, List<String> items,
+      ValueChanged<String> onChanged, IconData icon) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: DropdownButtonFormField<String>(
@@ -328,17 +285,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           labelText: label,
           prefixIcon: Icon(icon, size: 20),
         ),
-        items: items
-            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-            .toList(),
-        onChanged: (v) {
-          if (v != null) onChanged(v);
-        },
+        items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+        onChanged: (v) { if (v != null) onChanged(v); },
       ),
     );
   }
 
-  Widget _buildSwitch(BuildContext context, String label, bool value,
+  Widget _buildSwitch(String label, bool value,
       ValueChanged<bool> onChanged, IconData icon) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
@@ -349,8 +302,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: SwitchListTile(
           secondary: Icon(icon, size: 20),
           title: Text(label, style: const TextStyle(fontSize: 15)),
-          value: value,
-          onChanged: onChanged,
+          value: value, onChanged: onChanged,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
@@ -371,16 +323,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
       final results = engine.evaluate(profile, schemes);
       if (!mounted) return;
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => ResultsScreen(results: results),
-        ),
+      Navigator.push(context,
+        MaterialPageRoute(builder: (_) => ResultsScreen(results: results)),
       );
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('कुछ गलत हो गया। कृपया पुनः प्रयास करें।')),
+        SnackBar(content: Text(context.tr('error'))),
       );
     } finally {
       if (mounted) setState(() => _checking = false);

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../data/repository/scheme_repository.dart';
 import '../../engine/eligibility_engine.dart';
 import '../../models/scheme.dart';
+import '../../translations/app_localizations.dart';
 import '../widgets/scheme_card.dart';
 import 'detail_screen.dart';
 
@@ -61,9 +62,10 @@ class _BrowseScreenState extends State<BrowseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = context.tr;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('सभी योजनाएं'),
+        title: Text(tr('allSchemes')),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(100),
           child: Padding(
@@ -73,25 +75,19 @@ class _BrowseScreenState extends State<BrowseScreen> {
                 TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    hintText: 'योजना खोजें...',
+                    hintText: tr('searchSchemes'),
                     prefixIcon: const Icon(Icons.search, size: 22),
                     filled: true,
-                    fillColor:
-                        Theme.of(context).colorScheme.surfaceContainerHighest,
+                    fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
                       borderSide: BorderSide.none,
                     ),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     suffixIcon: _searchController.text.isNotEmpty
                         ? IconButton(
                             icon: const Icon(Icons.clear, size: 18),
-                            onPressed: () {
-                              _searchController.clear();
-                              _filter('');
-                            },
-                          )
+                            onPressed: () { _searchController.clear(); _filter(''); })
                         : null,
                   ),
                   onChanged: _filter,
@@ -102,9 +98,8 @@ class _BrowseScreenState extends State<BrowseScreen> {
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     children: [
-                      _buildCategoryChip(null, 'सभी'),
-                      ..._categories.map(
-                          (c) => _buildCategoryChip(c, c)),
+                      _buildCategoryChip(null, tr('all')),
+                      ..._categories.map((c) => _buildCategoryChip(c, c)),
                     ],
                   ),
                 ),
@@ -120,10 +115,9 @@ class _BrowseScreenState extends State<BrowseScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.search_off,
-                          size: 48, color: Colors.grey.shade400),
+                      Icon(Icons.search_off, size: 48, color: Colors.grey.shade400),
                       const SizedBox(height: 12),
-                      const Text('कोई योजना नहीं मिली'),
+                      Text(tr('noSchemes')),
                     ],
                   ),
                 )
@@ -134,21 +128,14 @@ class _BrowseScreenState extends State<BrowseScreen> {
                     final scheme = _filtered[index];
                     return SchemeCard(
                       scheme: scheme,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => DetailScreen(
-                              result: EligibilityResult(
-                                scheme: scheme,
-                                matchPercentage: 0,
-                                matchedRules: [],
-                                missedRules: [],
-                              ),
-                            ),
+                      onTap: () => Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => DetailScreen(
+                          result: EligibilityResult(
+                            scheme: scheme, matchPercentage: 0,
+                            matchedRules: [], missedRules: [],
                           ),
-                        );
-                      },
+                        )),
+                      ),
                     );
                   },
                 ),
@@ -157,7 +144,6 @@ class _BrowseScreenState extends State<BrowseScreen> {
 
   Widget _buildCategoryChip(String? category, String label) {
     final isSelected = _selectedCategory == category;
-    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: FilterChip(
@@ -167,8 +153,8 @@ class _BrowseScreenState extends State<BrowseScreen> {
           setState(() => _selectedCategory = isSelected ? null : category);
           _filter(_searchController.text);
         },
-        selectedColor: colorScheme.primaryContainer,
-        checkmarkColor: colorScheme.onPrimaryContainer,
+        selectedColor: Theme.of(context).colorScheme.primaryContainer,
+        checkmarkColor: Theme.of(context).colorScheme.onPrimaryContainer,
         side: BorderSide.none,
       ),
     );

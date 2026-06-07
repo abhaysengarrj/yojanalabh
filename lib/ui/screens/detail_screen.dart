@@ -4,6 +4,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../engine/eligibility_engine.dart';
 import '../../state/app_state.dart' as app_state;
+import '../../translations/app_localizations.dart';
 
 class DetailScreen extends StatefulWidget {
   final EligibilityResult result;
@@ -21,7 +22,7 @@ class _DetailScreenState extends State<DetailScreen> {
     if (link.isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('आवेदन लिंक उपलब्ध नहीं है')),
+        SnackBar(content: Text(context.tr('noLink'))),
       );
       return;
     }
@@ -34,7 +35,7 @@ class _DetailScreenState extends State<DetailScreen> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('लिंक खोलने में असमर्थ')),
+        SnackBar(content: Text(context.tr('cantOpen'))),
       );
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -44,7 +45,7 @@ class _DetailScreenState extends State<DetailScreen> {
   void _shareScheme() {
     final s = widget.result.scheme;
     Share.share(
-      '${s.name}\n\n${s.description}\n\nआवेदन: ${s.applyLink}\n\nयोजनालाभ ऐप के माध्यम से',
+      '${s.name}\n\n${s.description}\n\n${context.tr('applyNow')}: ${s.applyLink}\n\n${context.tr('shareScheme')}',
     );
   }
 
@@ -56,27 +57,21 @@ class _DetailScreenState extends State<DetailScreen> {
     final isFav = s.id != null ? appState.isFavorite(s.id!) : false;
     final colorScheme = Theme.of(context).colorScheme;
     final matchColor = r.matchPercentage >= 70
-        ? Colors.green
-        : r.matchPercentage >= 50
-            ? Colors.orange
-            : Colors.grey;
+        ? Colors.green : r.matchPercentage >= 50
+            ? Colors.orange : Colors.grey;
+    final tr = context.tr;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('योजना विवरण'),
+        title: Text(tr('schemeDetail')),
         actions: [
           if (s.id != null)
             IconButton(
-              icon: Icon(
-                isFav ? Icons.favorite : Icons.favorite_border,
-                color: isFav ? Colors.red : null,
-              ),
+              icon: Icon(isFav ? Icons.favorite : Icons.favorite_border,
+                  color: isFav ? Colors.red : null),
               onPressed: () => appState.toggleFavorite(s.id!),
             ),
-          IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: _shareScheme,
-          ),
+          IconButton(icon: const Icon(Icons.share), onPressed: _shareScheme),
         ],
       ),
       body: SingleChildScrollView(
@@ -90,14 +85,12 @@ class _DetailScreenState extends State<DetailScreen> {
                 child: Column(
                   children: [
                     SizedBox(
-                      height: 100,
-                      width: 100,
+                      height: 100, width: 100,
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
                           SizedBox(
-                            height: 90,
-                            width: 90,
+                            height: 90, width: 90,
                             child: CircularProgressIndicator(
                               value: r.matchPercentage / 100,
                               strokeWidth: 8,
@@ -108,17 +101,12 @@ class _DetailScreenState extends State<DetailScreen> {
                           Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                '${r.matchPercentage.round()}%',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  color: matchColor,
-                                ),
-                              ),
-                              Text('मिलान',
-                                  style: TextStyle(
-                                      fontSize: 11,
+                              Text('${r.matchPercentage.round()}%',
+                                  style: TextStyle(fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      color: matchColor)),
+                              Text(tr('match'),
+                                  style: TextStyle(fontSize: 11,
                                       color: Colors.grey.shade600)),
                             ],
                           ),
@@ -126,31 +114,20 @@ class _DetailScreenState extends State<DetailScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Text(
-                      s.name,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
+                    Text(s.name, textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
-                    Text(
-                      s.description,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 14, color: Colors.grey.shade700),
-                    ),
+                    Text(s.description, textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
                     const SizedBox(height: 12),
                     if (s.ministry.isNotEmpty || s.category.isNotEmpty)
                       Wrap(
-                        spacing: 8,
-                        runSpacing: 4,
+                        spacing: 8, runSpacing: 4,
                         children: [
                           if (s.ministry.isNotEmpty)
-                            _buildChip(context, Icons.account_balance,
-                                s.ministry, colorScheme.primary),
+                            _buildChip(Icons.account_balance, '${tr('ministry')}: ${s.ministry}', colorScheme.primary),
                           if (s.category.isNotEmpty)
-                            _buildChip(context, Icons.label,
-                                s.category, colorScheme.secondary),
+                            _buildChip(Icons.label, '${tr('category')}: ${s.category}', colorScheme.secondary),
                         ],
                       ),
                   ],
@@ -164,39 +141,28 @@ class _DetailScreenState extends State<DetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('मिलान नियम',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600)),
+                    Text(tr('matchRules'), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 12),
                     if (r.matchedRules.isNotEmpty) ...[
-                      const Text('पूर्ण:', style: TextStyle(color: Colors.green)),
+                      Text(tr('complete'), style: const TextStyle(color: Colors.green)),
                       ...r.matchedRules.map((rule) => Padding(
-                            padding: const EdgeInsets.only(left: 8, top: 4),
-                            child: Row(
-                              children: [
-                                Icon(Icons.check_circle,
-                                    size: 18, color: Colors.green.shade400),
-                                const SizedBox(width: 8),
-                                Text(rule),
-                              ],
-                            ),
-                          )),
+                        padding: const EdgeInsets.only(left: 8, top: 4),
+                        child: Row(children: [
+                          Icon(Icons.check_circle, size: 18, color: Colors.green.shade400),
+                          const SizedBox(width: 8), Text(rule),
+                        ]),
+                      )),
                     ],
                     if (r.missedRules.isNotEmpty) ...[
                       const SizedBox(height: 8),
-                      const Text('अपूर्ण:',
-                          style: TextStyle(color: Colors.red)),
+                      Text(tr('incomplete'), style: const TextStyle(color: Colors.red)),
                       ...r.missedRules.map((rule) => Padding(
-                            padding: const EdgeInsets.only(left: 8, top: 4),
-                            child: Row(
-                              children: [
-                                Icon(Icons.cancel,
-                                    size: 18, color: Colors.red.shade300),
-                                const SizedBox(width: 8),
-                                Text(rule),
-                              ],
-                            ),
-                          )),
+                        padding: const EdgeInsets.only(left: 8, top: 4),
+                        child: Row(children: [
+                          Icon(Icons.cancel, size: 18, color: Colors.red.shade300),
+                          const SizedBox(width: 8), Text(rule),
+                        ]),
+                      )),
                     ],
                   ],
                 ),
@@ -204,8 +170,7 @@ class _DetailScreenState extends State<DetailScreen> {
             ),
             const SizedBox(height: 24),
             SizedBox(
-              width: double.infinity,
-              height: 52,
+              width: double.infinity, height: 52,
               child: ElevatedButton.icon(
                 onPressed: _loading ? null : _openApplyLink,
                 style: ElevatedButton.styleFrom(
@@ -213,14 +178,10 @@ class _DetailScreenState extends State<DetailScreen> {
                   foregroundColor: colorScheme.onPrimary,
                 ),
                 icon: _loading
-                    ? const SizedBox(
-                        height: 20, width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.white,
-                        ),
-                      )
+                    ? const SizedBox(height: 20, width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                     : const Icon(Icons.open_in_new),
-                label: Text(_loading ? 'खोल रहा है...' : 'आवेदन करें'),
+                label: Text(_loading ? tr('opening') : tr('applyNow')),
               ),
             ),
             const SizedBox(height: 32),
@@ -230,8 +191,7 @@ class _DetailScreenState extends State<DetailScreen> {
     );
   }
 
-  Widget _buildChip(
-      BuildContext context, IconData icon, String text, Color color) {
+  Widget _buildChip(IconData icon, String text, Color color) {
     return Chip(
       avatar: Icon(icon, size: 16, color: color),
       label: Text(text, style: TextStyle(fontSize: 12, color: color)),

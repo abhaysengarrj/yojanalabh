@@ -3,11 +3,30 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AppState extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.light;
+  Locale _locale = const Locale('hi');
   final Set<int> _favoriteIds = {};
 
   ThemeMode get themeMode => _themeMode;
+  Locale get locale => _locale;
   Set<int> get favoriteIds => Set.unmodifiable(_favoriteIds);
   bool get isDark => _themeMode == ThemeMode.dark;
+  String get languageCode => _locale.languageCode;
+
+  static const supportedLocales = [
+    Locale('hi'), Locale('en'), Locale('mr'), Locale('bn'),
+    Locale('ta'), Locale('te'), Locale('gu'), Locale('pa'),
+  ];
+
+  static const localeNames = {
+    'hi': 'हिन्दी',
+    'en': 'English',
+    'mr': 'मराठी',
+    'bn': 'বাংলা',
+    'ta': 'தமிழ்',
+    'te': 'తెలుగు',
+    'gu': 'ગુજરાતી',
+    'pa': 'ਪੰਜਾਬੀ',
+  };
 
   AppState() {
     _loadPrefs();
@@ -17,6 +36,8 @@ class AppState extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final isDark = prefs.getBool('dark_mode') ?? false;
     _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
+    final lang = prefs.getString('language') ?? 'hi';
+    _locale = Locale(lang);
     final favs = prefs.getStringList('favorites') ?? [];
     _favoriteIds.addAll(favs.map((e) => int.parse(e)));
     notifyListeners();
@@ -27,6 +48,13 @@ class AppState extends ChangeNotifier {
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('dark_mode', isDark);
+  }
+
+  Future<void> setLocale(Locale locale) async {
+    _locale = locale;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('language', locale.languageCode);
   }
 
   bool isFavorite(int schemeId) => _favoriteIds.contains(schemeId);
