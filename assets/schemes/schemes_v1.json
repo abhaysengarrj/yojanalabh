@@ -213,6 +213,18 @@
       "eligibility": {
         "belowPovertyLine": true
       }
+    },
+    {
+      "name": "दीनदयाल उपाध्याय ग्रामीण कौशल्या योजना (डीडीयूजीकेवाई)",
+      "description": "ग्रामीण बेरोजगार युवाओं को कौशल प्रशिक्षण और रोजगार, निःशुल्क प्रशिक्षण, प्रमाणपत्र और नौकरी सहायता",
+      "ministry": "ग्रामीण विकास मंत्रालय",
+      "applyLink": "https://kaushalbharat.gov.in",
+      "category": "रोजगार",
+      "eligibility": {
+        "minAge": 18,
+        "maxAge": 35,
+        "occupation": "बेरोजगार"
+      }
     }
   ]
 }
