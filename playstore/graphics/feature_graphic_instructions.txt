@@ -1,0 +1,28 @@
+# Feature Graphic Instructions
+
+**Play Store requirement:** 1024 x 500 px PNG or JPG
+
+## How to create (free):
+
+### Option 1: Canva (Easiest)
+1. Go to https://canva.com
+2. Search for "Google Play feature graphic" template
+3. Select a purple/indigo theme
+4. Add text: "योजनालाभ" (large, bold, white)
+5. Tagline: "जानें कौन सी योजना आपके लिए है" (smaller below)
+6. Add a simple icon (government building or checkmark)
+7. Set background color: #3F51B5 (Indigo) or any dark blue
+8. Download as PNG
+
+### Option 2: Use a text-based graphic
+Create a simple PNG with:
+- Background: Solid indigo (#3F51B5)
+- Text: "योजनालाभ" in white, font size ~48px, centered
+- Subtitle: "सरकारी योजना पात्रता जांच" in light grey
+- No complex imagery needed
+
+### Option 3: Hire on Fiverr (~₹500)
+Search for "Google Play graphic designer" — get a professional one for cheap.
+
+## Upload in Play Console:
+Store presence → Main store listing → Feature graphic → Upload

@@ -1,0 +1,39 @@
+# App Icon Generation Instructions
+
+## Play Store requires:
+- **High-res icon:** 512 x 512 px (32-bit PNG)
+- **Feature graphic:** 1024 x 500 px
+
+## Option 1: Use Android Studio (if you have it)
+1. Open Android Studio
+2. Right-click `android/app/src/main/res` → New → Image Asset
+3. Choose "Foreground Layer" → "Text" → type "यो" or a simple icon
+4. Choose "Background Layer" → select Indigo (#3F51B5)
+5. Click Next → Finish
+6. The 512x512 icon will be generated in `android/app/src/main/res/mipmap-anydpi-v26/`
+
+## Option 2: Use the existing icon (already there)
+The project already has launcher icons at:
+- `android/app/src/main/res/mipmap-hdpi/ic_launcher.png` (72x72)
+- `android/app/src/main/res/mipmap-mdpi/ic_launcher.png` (48x48)
+- `android/app/src/main/res/mipmap-xhdpi/ic_launcher.png` (96x96)
+- `android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png` (144x144)
+- `android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png` (192x192)
+
+These are the default Flutter icons. For a custom icon:
+
+### Option 3: Free online tool
+1. Go to https://romannurik.github.io/AndroidAssetStudio/icons-launcher.html
+2. Upload or design your icon
+3. Click "Download" → extract and replace all mipmap folders
+4. Play Store 512x512 icon is also generated
+
+### Option 4: Canva
+1. Go to https://canva.com
+2. Search "app icon" template
+3. Design with indigo background + "यो" text in white
+4. Download 512x512 PNG
+5. Use for Play Store listing
+
+## Play Store icon upload:
+Store presence → Main store listing → App icon → Upload the 512x512 PNG

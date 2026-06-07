@@ -1,0 +1,46 @@
+# Screenshots Instructions
+
+## Play Store Requirements:
+- **Phone screenshots:** 2-8 required (min 1080 x 1920 px, 3200 x 3840 px max)
+- **Tablet screenshots:** 0-8 optional (min 1080 x 1920 px)
+- **Format:** PNG or JPEG
+
+## How to take screenshots from your phone:
+
+### Method 1: Install APK on phone and capture
+1. Copy `build/app/outputs/flutter-apk/app-release.apk` to your phone
+2. Install it
+3. Open the app → take screenshots at each screen:
+   - **Screenshot 1:** Profile form (with data filled in) — show Hindi UI
+   - **Screenshot 2:** Results screen showing eligible schemes with percentages
+   - **Screenshot 3:** Scheme detail screen showing full description
+
+### Taking screenshots on Android:
+- **Most phones:** Press Power + Volume Down simultaneously
+- **Samsung:** Press Power + Volume Down or swipe palm across screen
+- **MIUI/Xiaomi:** Power + Volume Down or three-finger swipe down
+
+### Transfer screenshots to PC:
+1. Connect phone via USB cable
+2. Enable File Transfer on phone notification
+3. Copy from `DCIM/Screenshots` folder to this directory
+
+### Recommended screenshots (take these 3):
+
+**Screenshot 1 — Profile Form (1080x1920)**
+- Open app → fill in: age 30, income ₹2,00,000, occupation किसान, state उत्तर प्रदेश
+- Show the form with slider values visible
+- **File name:** `screenshot1_profile.png`
+
+**Screenshot 2 — Results Screen (1080x1920)**
+- Tap "जांचें" → show results with "आपके लिए उपयुक्त" section
+- Show at least 3-4 scheme cards with different match percentages
+- **File name:** `screenshot2_results.png`
+
+**Screenshot 3 — Scheme Detail (1080x1920)**
+- Tap any scheme → show detail screen with description, matched/missed rules
+- Show the "आवेदन करें" button at bottom
+- **File name:** `screenshot3_detail.png`
+
+## Upload in Play Console:
+Store presence → Main store listing → Phone screenshots → Upload all 3 files
